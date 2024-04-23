@@ -1,0 +1,45 @@
+---
+title: "Clean Data"
+output: html_document
+date: "2024-04-22"
+---
+
+Here is the data I cleaned, separated to each species
+
+```{r cars}
+library(knitr)
+library(dplyr)
+coral_ca=read.csv('MARS5007_CA.csv')
+coral_lw=read.csv('MARS5007_LW.csv')
+
+#filtering only ca marginopora vertebralis
+coral_ca_MV = coral_ca %>% rename(sample_number=Site.1..Coral.algal.reef.flat..One.Tree.Island,small_nb=X,Large_nb=X.1,small_motted=X.2,Large_motted=X.3,small_bleached=X.4,Large_bleached=X.5,total_sample=X.6,perc_snb=X.7,perc_lnb=X.8,perc_sm=X.9,perc_lm=X.10,perc_sb=X.11,perc_lb=X.12) %>% mutate(Species=ifelse(row_number()<=17,"Marginopora vertebralis","Baculogypsina sphaerulata")) %>% filter(row_number()<=14) 
+coral_ca_MV =coral_ca_MV[-(1:4), ] 
+
+#filtering only ca Baculogypsina
+coral_ca_BS=coral_ca %>% rename(sample_number=Site.1..Coral.algal.reef.flat..One.Tree.Island,small_nb=X,Large_nb=X.1,small_motted=X.2,Large_motted=X.3,small_bleached=X.4,Large_bleached=X.5,sum=X.6,perc_snb=X.7,perc_lnb=X.8,perc_sm=X.9,perc_lm=X.10,perc_sb=X.11,perc_lb=X.12) %>% mutate(Species=ifelse(row_number()<=17,"Marginopora vertebralis","Baculogypsina sphaerulata")) %>% filter(row_number()>15) %>% select(sample_number,small_nb,Large_nb,small_bleached,Large_bleached,sum,sum,Species) %>% rename(non_b=small_nb, m_b=Large_nb, total_sample=small_bleached, perc_nb=Large_bleached, perc_b=sum) %>% filter(row_number()<14)
+coral_ca_BS=coral_ca_BS[-(1:3),  ] 
+
+#filtering only LW marginopora vertebralis
+coral_lw_MV=coral_lw %>% rename(sample_number= Site.2..Leeward..Entrance..One.Tree.Island,small_nb=X,Large_nb=X.1,small_motted=X.2,Large_motted=X.3,small_bleached=X.4,Large_bleached=X.5,total_sample=X.6,perc_snb=X.7,perc_lnb=X.8,perc_sm=X.9,perc_lm=X.10,perc_sb=X.11,perc_lb=X.12) %>% mutate(Species=ifelse(row_number()<=17,"Marginopora vertebralis","Baculogypsina sphaerulata")) %>% filter(row_number()<=14) 
+coral_lw_MV =coral_lw_MV[-(1:4), ] 
+
+
+#filtering only ca Baculogypsina
+coral_lw_BS=coral_lw %>% rename(sample_number=Site.2..Leeward..Entrance..One.Tree.Island,small_nb=X,Large_nb=X.1,small_motted=X.2,Large_motted=X.3,small_bleached=X.4,Large_bleached=X.5,sum=X.6,perc_snb=X.7,perc_lnb=X.8,perc_sm=X.9,perc_lm=X.10,perc_sb=X.11,perc_lb=X.12) %>% mutate(Species=ifelse(row_number()<=17,"Marginopora vertebralis","Baculogypsina sphaerulata")) %>% filter(row_number()>18) %>%  select(sample_number,small_nb,Large_nb,Large_motted,small_bleached,Large_bleached,Species) %>% rename(non_b=small_nb, m_b=Large_nb, total_sample=Large_motted, perc_nb=small_bleached, perc_b=Large_bleached)
+coral_lw_BS= coral_lw_BS[ -(11:12), ]
+
+#binding BS 
+coral_BS = rbind(coral_ca_BS,coral_lw_BS)
+coral_BS=coral_BS %>% mutate(location=ifelse(row_number()<=10,"Coral-algal reef flat","Leeward"))
+
+#binding MV
+coral_MV= rbind(coral_ca_MV,coral_lw_MV)
+coral_MV=coral_MV %>% mutate(location=ifelse(row_number()<=10,"Coral-algal reef flat","Leeward"))
+
+kable(coral_MV)
+kable(coral_BS)
+
+```
+
+
